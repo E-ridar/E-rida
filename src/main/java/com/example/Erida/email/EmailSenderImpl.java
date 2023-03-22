@@ -10,9 +10,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class EmailServiceImpl implements EmailService{
+public class EmailSenderImpl implements EmailSender {
 
 
+    @Autowired
     private JavaMailSender javaMailSender;
 
     @Override
