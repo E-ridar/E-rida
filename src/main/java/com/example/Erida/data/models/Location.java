@@ -12,12 +12,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @RequiredArgsConstructor
-public class Car {
+@AllArgsConstructor
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String model;
-    private String colour;
+    private String pickUpLocation;
+    private String destination;
 }

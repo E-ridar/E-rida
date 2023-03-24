@@ -30,6 +30,7 @@ public class PassengerServiceImpl implements PassengerService{
     @Autowired
     private PassengerRepo passengerRepo;
 
+
     private CardService cardService;
 
     @Autowired
@@ -55,16 +56,16 @@ public class PassengerServiceImpl implements PassengerService{
 
     @Override
     public String login(LoginRequest loginRequest) {
-       Passenger foundUser = passengerRepo.findUserByEmailIgnoreCase(loginRequest.getEmailAddress())
+       Passenger foundUser = passengerRepo.findUserByEmailAddressIgnoreCase(loginRequest.getEmailAddress())
                 .orElseThrow(()-> new GenericHandlerException("User with " + loginRequest.getEmailAddress() + "does not exist "));
-        if (foundUser.getIsEnabled())throw new GenericHandlerException("Verify account");
+        if (foundUser.getIsDisabled())throw new GenericHandlerException("Verify account");
         if (!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword()))throw new GenericHandlerException("Incorrect Password");
         return "Login successful";
     }
 
     @Override
     public Optional<Passenger> findUserByEmailAddress(String email) {
-        return passengerRepo.findUserByEmailIgnoreCase(email);
+        return passengerRepo.findUserByEmailAddressIgnoreCase(email);
     }
 
     @Override
@@ -125,7 +126,7 @@ public class PassengerServiceImpl implements PassengerService{
     {
         Passenger foundUser = passengerRepo.findById(passengerId).get();
         if (BCrypt.checkpw(deleteUserRequest.getPassword(), foundUser.getPassword())){
-            foundUser.setEmail("deleted"+foundUser.getEmail()+ UUID.randomUUID());
+            foundUser.setEmailAddress("deleted"+foundUser.getEmailAddress()+ UUID.randomUUID());
             cardService.deleteUserCards(passengerId);
             saveUser(foundUser);
             return "Account deleted successfully";

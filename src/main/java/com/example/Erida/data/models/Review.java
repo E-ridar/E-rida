@@ -1,18 +1,12 @@
 package com.example.Erida.data.models;
 
 import com.example.Erida.enums.Rating;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class Review {
@@ -21,6 +15,8 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String feedBack;
+
+    @Enumerated(value = EnumType.STRING)
     private Rating rating;
     private Long rater;
     private Long ratee;
