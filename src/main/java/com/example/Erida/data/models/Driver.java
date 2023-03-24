@@ -1,7 +1,11 @@
 package com.example.Erida.data.models;
 
-import com.example.Erida.enums.Role;
+import com.example.Erida.enums.Gender;
+import com.example.Erida.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.Instant;
@@ -10,7 +14,7 @@ import java.time.Instant;
 @Setter
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Builder
 public class Driver {
 
@@ -18,15 +22,31 @@ public class Driver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String phoneNumber;
-    private int age;
-    private String name;
+    private String firstName;
+    private String lastName;
+    @Enumerated(value = EnumType.STRING)
+    private Gender gender;
+
+
+    private String emailAddress;
     private String password;
-    private String email;
-    private Role role;
-    private Instant createdAt;
-    private Boolean isEnabled;
+    private Boolean isDisabled = true;
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private BankInfo bankInfo;
 
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
+
+    public Driver(String firstName, String lastName, Gender gender,
+                  String phoneNumber, String emailAddress, String password) {
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+        this.password = password;
+
+    }
 }

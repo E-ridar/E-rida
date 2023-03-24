@@ -1,15 +1,17 @@
 package com.example.Erida.service.Registration;
 
+import com.example.Erida.data.models.Driver;
 import com.example.Erida.data.models.Passenger;
 import com.example.Erida.data.models.VerificationOTP;
+import com.example.Erida.data.repository.DriverRepo;
 import com.example.Erida.data.repository.PassengerRepo;
 import com.example.Erida.dtos.request.DriverRegistrationRequest;
 import com.example.Erida.dtos.request.PassengerRegistrationRequest;
 import com.example.Erida.dtos.request.SendOTPRequest;
 import com.example.Erida.dtos.request.VerifyOTPRequest;
 import com.example.Erida.email.EmailSender;
-import com.example.Erida.enums.Role;
 import com.example.Erida.exceptions.GenericHandlerException;
+import com.example.Erida.service.driver.DriverService;
 import com.example.Erida.service.passengerService.PassengerService;
 import com.example.Erida.service.verifyOtp.VerificationOTPService;
 import com.example.Erida.utils.OTPGenerator;
@@ -25,10 +27,17 @@ public class RegistrationServiceImpl implements RegistrationService{
 
     @Autowired
     private PassengerService passengerService;
+    @Autowired
+    private DriverService driverService;
+
+    private DriverRegistrationRequest driverRegistrationRequest;
 
 
     @Autowired
-        private PassengerRepo userRepo;
+    private PassengerRepo passengerRepo;
+
+    @Autowired
+    private DriverRepo driverRepo;
     @Autowired
     private VerificationOTPService verificationOTPService;
 
@@ -40,20 +49,44 @@ public class RegistrationServiceImpl implements RegistrationService{
                 .isPresent();
         if (isExist)throw new GenericHandlerException("User with email already exist");
         String oTP =  passengerService.createAccount(new Passenger(
-                passengerRegistrationRequest.getName(),
+                passengerRegistrationRequest.getFirstName(),
+                passengerRegistrationRequest.getLastName(),
+                passengerRegistrationRequest.getGender(),
+                passengerRegistrationRequest.getPhoneNumber(),
                 passengerRegistrationRequest.getEmailAddress(),
-                BCrypt.hashpw(passengerRegistrationRequest.getPassword(),BCrypt.gensalt()),
-                Role.PASSENGER
+                BCrypt.hashpw(passengerRegistrationRequest.getPassword(),BCrypt.gensalt())
+
         ));
 
-        emailSender.send(passengerRegistrationRequest.getEmailAddress(), buildEmail(passengerRegistrationRequest.getName(), oTP));
+        emailSender.send(passengerRegistrationRequest.getEmailAddress(), buildEmail(passengerRegistrationRequest.getFirstName(), oTP));
         return oTP;
     }
 
     @Override
     public String driverRegister(DriverRegistrationRequest registrationRequest) {
-        return null;
+        if (registrationRequest == null) {
+            throw new IllegalArgumentException("DriverRegistrationRequest cannot be null");
+        }
+        boolean isExist = driverService.findUserByEmailIgnoreCase(registrationRequest.getEmailAddress())
+                .isPresent();
+        if (isExist) {
+            throw new GenericHandlerException("User with email already exists");
+        }
+        String oTP =  driverService.createAccount(new Driver(
+                registrationRequest.getFirstName(),
+                registrationRequest.getLastName(),
+                registrationRequest.getGender(),
+                registrationRequest.getPhoneNumber(),
+                registrationRequest.getEmailAddress(),
+                BCrypt.hashpw(registrationRequest.getPassword(), BCrypt.gensalt())
+
+        ));
+        emailSender.send(registrationRequest.getEmailAddress(), buildEmail(registrationRequest.getFirstName(), oTP));
+        return oTP;
     }
+
+
+
 
     @Override
     public String verifyOTP(VerifyOTPRequest verifyOTPRequest) {
@@ -75,10 +108,10 @@ public class RegistrationServiceImpl implements RegistrationService{
 
     @Override
     public String resendVerificationOTP(SendOTPRequest sendOTPRequest) throws MessagingException {
-        Passenger foundUser= userRepo.findUserByEmailIgnoreCase(sendOTPRequest.getEmailAddress())
+        Passenger foundUser= passengerRepo.findUserByEmailAddressIgnoreCase(sendOTPRequest.getEmailAddress())
                 .orElseThrow(()->
                         new GenericHandlerException("User with this" + sendOTPRequest.getEmailAddress() +"does not exist"));
-        if (!foundUser.getIsEnabled()) throw new GenericHandlerException("You are already a verified user");
+        if (!foundUser.getIsDisabled()) throw new GenericHandlerException("You are already a verified user");
         String oTP = OTPGenerator.generateOTP().toString();
         VerificationOTP verificationOTP = new VerificationOTP(
                 oTP,
@@ -87,7 +120,7 @@ public class RegistrationServiceImpl implements RegistrationService{
                 foundUser
         );
         verificationOTPService.saveVerificationOTP(verificationOTP);
-        emailSender.send(sendOTPRequest.getEmailAddress(), buildEmail(foundUser.getName(), oTP));
+        emailSender.send(sendOTPRequest.getEmailAddress(), buildEmail(foundUser.getFirstName(), oTP));
 
         return oTP;
     }

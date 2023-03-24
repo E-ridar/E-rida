@@ -7,7 +7,7 @@ import com.example.Erida.dtos.response.AccountVerificationPaystackResponse;
 import com.example.Erida.dtos.response.BVNValidationPaystackResponse;
 import com.example.Erida.dtos.response.BankName;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.data.jpa.repository.JpaRepository;
+
 
 import java.io.IOException;
 import java.text.ParseException;

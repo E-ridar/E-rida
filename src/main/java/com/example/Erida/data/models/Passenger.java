@@ -1,8 +1,11 @@
 package com.example.Erida.data.models;
 
 import com.example.Erida.enums.Gender;
-import com.example.Erida.enums.Role;
+import com.example.Erida.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.Instant;
@@ -11,27 +14,29 @@ import java.time.Instant;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class Passenger {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String password;
-    private String email;
-    private Role role;
-    private Instant createdAt;
-    private Boolean isEnabled;
+    private String firstName;
+    private String lastName;
+
+    private String emailAddress;
     private String phoneNumber;
+    private String password;
+    private Boolean isDisabled = true;
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-
-    public Passenger(String name, String email, String password, Role role) {
-        this.name = name;
-        this.email = email;
+    public Passenger(String firstName, String lastName, Gender gender, String phoneNumber, String emailAddress, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
         this.password = password;
-        this.role = role;
+
     }
+
 }

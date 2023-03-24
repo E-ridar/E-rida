@@ -1,5 +1,6 @@
 package com.example.Erida.controller;
 
+import com.example.Erida.dtos.request.DriverRegistrationRequest;
 import com.example.Erida.dtos.request.PassengerRegistrationRequest;
 import com.example.Erida.dtos.request.SendOTPRequest;
 import com.example.Erida.dtos.request.VerifyOTPRequest;
@@ -25,7 +26,7 @@ public class RegistrationController {
 
         @Autowired
         private RegistrationService registrationService;
-        @PostMapping("/register")
+        @PostMapping("/passenger-register")
         public ResponseEntity<?> passengerRegister(@RequestBody PassengerRegistrationRequest registrationRequest,
                                           HttpServletRequest httpServletRequest) throws MessagingException {
             String createUser = registrationService.passengerRegister(registrationRequest);
@@ -39,6 +40,24 @@ public class RegistrationController {
 
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
         }
+
+
+
+    @PostMapping("/driver-register")
+    public ResponseEntity<?> driverRegister(@RequestBody DriverRegistrationRequest registrationRequest,
+                                               HttpServletRequest httpServletRequest) throws MessagingException {
+        String createUser = registrationService.driverRegister(registrationRequest);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .timeStamp(ZonedDateTime.now())
+                .data(createUser)
+                .path(httpServletRequest.getRequestURI())
+                .statusCode(HttpStatus.OK.value())
+                .isSuccessful(true)
+                .build();
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
 
 
     @PostMapping("/verify")

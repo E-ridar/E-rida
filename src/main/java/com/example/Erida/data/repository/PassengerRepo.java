@@ -10,10 +10,10 @@ import java.util.Optional;
 
 public interface PassengerRepo extends JpaRepository<Passenger, Long> {
 
-    Optional<Passenger> findUserByEmailIgnoreCase(String emailAddress);
+    Optional<Passenger> findUserByEmailAddressIgnoreCase(String emailAddress);
     @Transactional
     @Modifying
-    @Query("UPDATE Passenger passenger SET passenger.isEnabled = false WHERE passenger.email=?1")
+    @Query("UPDATE Passenger passenger SET passenger.isDisabled = false WHERE passenger.emailAddress=?1")
     void enableUser(String emailAddress);
 
 }

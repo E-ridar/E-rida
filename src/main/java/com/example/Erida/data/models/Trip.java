@@ -1,23 +1,27 @@
 package com.example.Erida.data.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@Entity
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-@AllArgsConstructor
+@Entity
 @RequiredArgsConstructor
-public class Car {
+@AllArgsConstructor
+public class Trip {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String model;
-    private String colour;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
+    @OneToOne
+    private Location location;
+
 }
